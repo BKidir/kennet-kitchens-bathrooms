@@ -97,7 +97,7 @@ Both forms include a honeypot field (`company_website`) and a required consent c
 ## Deploying to Vercel
 
 1. Push this folder to a Git repository and import it in Vercel. The Astro preset is detected automatically.
-2. Set `SITE_URL` to the production URL (used for canonical tags, the sitemap and OG images). Default: `https://kennet-kitchens.vercel.app`.
+2. Set `SITE_URL` to the production URL (used for canonical tags, the sitemap and OG images). Default: `https://kennet-kitchens-bathrooms.vercel.app`.
 3. Deploy. `vercel.json` sets clean URLs (no `.html`, no trailing slash), long-lived immutable caching for hashed assets and fonts, and security headers.
 
 ## Reusing for a real client

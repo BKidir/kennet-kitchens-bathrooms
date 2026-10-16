@@ -2,8 +2,9 @@
 import Logo from '@/components/ui/Logo.astro';
 import Icon from '@/components/ui/Icon.astro';
 import { BUSINESS, MAIN_NAV, QUOTE_HREF } from '@/config';
+import { cleanPath } from '@/lib/path';
 
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const path = cleanPath(Astro.url);
 const isCurrent = (href: string) => path === href;
 const isSection = (item: (typeof MAIN_NAV)[number]) =>
   path === item.href || path.startsWith(item.href + '/') || (item.children?.some((c) => c.href === path) ?? false);

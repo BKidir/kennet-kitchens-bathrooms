@@ -34,7 +34,10 @@ for (const f of files) {
   if (desc.length > 155) flag(name, `description ${desc.length} chars`);
   if (desc.length < 70) flag(name, `description short (${desc.length})`);
   if (h1.length !== 1) flag(name, `${h1.length} H1s`);
-  if (!/<link rel="canonical" href="https?:\/\/[^"]+"/.test(html)) flag(name, 'no canonical');
+  const canon = html.match(/<link rel="canonical" href="(https?:\/\/[^"]+)"/)?.[1];
+  const route = name.replace(/\.html$/, '').replace(/^\/index$/, '/');
+  if (!canon) flag(name, 'no canonical');
+  else if (new URL(canon).pathname !== route) flag(name, `canonical ${canon} does not match route ${route}`);
   if (!/<html lang="en-GB"/.test(html)) flag(name, 'lang not en-GB');
   for (const [map, val, label] of [[titles, title, 'title'], [descs, desc, 'description'], [h1s, h1[0], 'H1']]) {
     if (map.has(val)) flag(name, `duplicate ${label} with ${map.get(val)}`);

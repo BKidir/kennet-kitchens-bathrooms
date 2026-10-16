@@ -1,5 +1,6 @@
 ---
 import { IS_DEMO, BUSINESS } from '@/config';
+import { cleanPath } from '@/lib/path';
 
 export type OgType = 'default' | 'kitchens' | 'bathrooms' | 'projects' | 'advice' | 'areas';
 
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const { title, description, og = 'default', ogImageUrl, type = 'website', noindex = false, published } = Astro.props;
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href;
+const canonical = new URL(cleanPath(Astro.url), Astro.site).href;
 const image = ogImageUrl ?? new URL(`/og/${og}.png`, Astro.site).href;
 const robots = IS_DEMO || noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large';
 ---
