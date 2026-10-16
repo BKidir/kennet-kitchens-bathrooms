@@ -1,0 +1,39 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS, KITCHEN_LINKS, BATHROOM_LINKS } from '@/config';
+
+const groups = [
+  { title: 'Kitchens', links: [{ label: 'All kitchens', href: '/kitchens' }, ...KITCHEN_LINKS] },
+  { title: 'Bathrooms', links: [{ label: 'All bathrooms', href: '/bathrooms' }, ...BATHROOM_LINKS] },
+  {
+    title: 'Popular pages',
+    links: [
+      { label: 'Get a free quote', href: '/get-a-quote' },
+      { label: 'Recent projects', href: '/projects' },
+      { label: 'Kitchen cost guide', href: '/advice/how-much-does-a-new-kitchen-cost-swindon' },
+      { label: 'FAQs', href: '/faqs' },
+      { label: 'Contact us', href: '/contact' },
+    ],
+  },
+];
+---
+
+<BaseLayout title="Page Not Found | Kennet Kitchens & Bathrooms" description="Sorry, we couldn’t find that page. Try one of these links to our kitchen and bathroom services, projects and advice." noindex>
+  <section class="container-x py-16 sm:py-24">
+    <p class="eyebrow">Error 404</p>
+    <h1 class="mt-4 max-w-3xl">We couldn’t find that page</h1>
+    <p class="lead mt-5">It may have moved, or the link may be mistyped. Were you looking for one of these?</p>
+    <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      {groups.map((g) => (
+        <nav aria-labelledby={`nf-${g.title}`}>
+          <h2 id={`nf-${g.title}`} class="font-sans text-sm font-bold tracking-[0.12em] text-brass-text uppercase">{g.title}</h2>
+          <ul class="mt-3 divide-y divide-line border-y border-line">
+            {g.links.map((l) => <li><a href={l.href} class="group flex min-h-12 items-center justify-between gap-3 font-semibold no-underline hover:text-teal">{l.label}<Icon name="arrow" size={16} class="text-teal transition-transform group-hover:translate-x-1" /></a></li>)}
+          </ul>
+        </nav>
+      ))}
+    </div>
+    <p class="mt-12">Or go back to the <a href="/" class="link">homepage</a>, or call us on <a href={BUSINESS.phone.href} class="link">{BUSINESS.phone.display}</a>.</p>
+  </section>
+</BaseLayout>

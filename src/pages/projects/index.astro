@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import Gallery from '@/components/Gallery.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { GALLERY } from '@/data/gallery';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Kitchen & Bathroom Projects in Swindon | Kennet"
+  description="Browse kitchens, bathrooms and wet rooms we’ve designed and fitted across Swindon, Wiltshire and the Cotswolds, with before-and-after case studies."
+  og="projects"
+>
+  <PageHero
+    crumbs={[{ name: 'Projects', href: '/projects' }]}
+    eyebrow="Our work"
+    title="Kitchen and Bathroom Projects Across Swindon and Wiltshire"
+    lead="A selection of kitchens, bathrooms and wet rooms our team has designed and fitted. Start with the case studies for the full story, or filter the gallery by room."
+  />
+
+  <section class="section" aria-labelledby="case-studies">
+    <div class="container-x">
+      <SectionHeading eyebrow="Case studies" title="The full story, from brief to handover" id="case-studies" lead="What the homeowners wanted, what we found when we opened up the walls and floors, and how we solved it." />
+      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((p, i) => <ProjectCard project={p} delay={i * 90} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="gallery-title">
+    <div class="container-x">
+      <SectionHeading eyebrow="Gallery" title="Recent kitchens, bathrooms and wet rooms" id="gallery-title" lead="Select a photo to view it larger. Use the arrow keys to move between photos." />
+      <div class="mt-10"><Gallery items={GALLERY} filter /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Like what you see?" text="Tell us about your kitchen or bathroom. We’ll arrange a free design visit and show you what’s possible in your home." />
+</BaseLayout>

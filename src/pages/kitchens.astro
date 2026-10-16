@@ -1,0 +1,123 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import BeforeAfter from '@/components/BeforeAfter.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { AREAS } from '@/config';
+import { service } from '@/lib/schema';
+
+const services = (await getCollection('services')).filter((s) => s.data.category === 'kitchens').sort((a, b) => a.data.order - b.data.order);
+const project = (await getCollection('projects')).find((p) => p.data.category === 'kitchens')!;
+
+const styles = [
+  { name: 'Shaker', text: 'The five-piece door that suits almost any home. Painted in sage, navy, putty or cream, it works in Victorian terraces and new builds alike.', image: 'shakerSage' as const },
+  { name: 'Handleless', text: 'Clean lines, integrated rails and no handles to catch on. Ideal for open-plan rooms and contemporary extensions.', image: 'navyKitchen' as const },
+  { name: 'In-frame', text: 'Doors set inside a solid frame, the traditional English look. Beautiful in cottages and period homes around Marlborough and Cirencester.', image: 'oakKitchen' as const },
+];
+
+const faqs = [
+  { q: 'How much does a new kitchen cost?', a: 'Most of our fitted kitchens cost between £12,000 and £35,000, including design, units, worktops, appliances and all trades. Our [kitchen cost guide](/advice/how-much-does-a-new-kitchen-cost-swindon) explains what drives the price.' },
+  { q: 'How long will I be without a kitchen?', a: 'Typically two to four weeks on site. We set up a temporary sink where we can, and your project manager tells you each evening what is happening the next day.' },
+  { q: 'Do you only fit kitchens you supply?', a: 'Yes for full kitchens, because it lets us guarantee everything from the carcasses to the worktops. If your units are sound, our [refurbishment service](/kitchen-refurbishment) replaces just the doors, worktops and handles.' },
+  { q: 'Can you remove a wall to make an open-plan kitchen?', a: 'Yes. We arrange the structural engineer, steelwork and building control as part of the project, so you deal with one team throughout.' },
+];
+---
+
+<BaseLayout
+  title="Fitted Kitchens in Swindon | Design & Installation"
+  description="Fitted kitchens designed in 3D and installed by our own Swindon team. Shaker, handleless and in-frame styles from £12k, with a 10-year guarantee."
+  og="kitchens"
+  heroImage="heroKitchen"
+  heroSizes="(min-width: 1200px) 560px, (min-width: 1024px) 46vw, 100vw"
+  schema={[service(Astro.site, { name: 'Fitted kitchens in Swindon', description: 'Kitchen design, supply and installation across Swindon and Wiltshire.', path: '/kitchens', serviceType: 'Kitchen design and installation' })]}
+>
+  <PageHero
+    crumbs={[{ name: 'Kitchens', href: '/kitchens' }]}
+    eyebrow="Kitchens"
+    title="Fitted Kitchens in Swindon, Designed and Installed by One Team"
+    lead="Your kitchen is the room that works hardest. We design it around how you live, show it to you in 3D, and fit it with our own team, so the kitchen you approved is the kitchen you get."
+    image="heroKitchen"
+  />
+
+  <section class="section" aria-labelledby="k-services">
+    <div class="container-x">
+      <SectionHeading eyebrow="Kitchen services" title="Everything from a new layout to new doors" id="k-services" lead="Whether you’re starting from bare walls or just want your existing kitchen to feel new, we handle every stage in-house." />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {services.map((s, i) => <ServiceCard href={`/${s.id}`} title={s.data.name} text={s.data.summary} image={s.data.image} delay={i * 70} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="k-styles">
+    <div class="container-x">
+      <SectionHeading eyebrow="Styles" title="Find a style that suits your home" id="k-styles" lead="We’re not tied to one manufacturer’s look. These three styles cover most of what we fit, each in dozens of colours and finishes." />
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        {styles.map((s, i) => (
+          <article data-reveal style={`--reveal-delay:${i * 90}ms`}>
+            <Img image={s.image} ratio="4/3" class="rounded-[var(--radius-card)]" sizes="(min-width: 768px) 33vw, 100vw" />
+            <h3 class="mt-5 text-2xl">{s.name}</h3>
+            <p class="mt-2 text-ink-soft">{s.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="k-cost">
+    <div class="container-x grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <SectionHeading eyebrow="Prices" title="What a new kitchen costs" id="k-cost" />
+        <div class="prose mt-5">
+          <p>Every kitchen we fit is quoted at a fixed, itemised price after a free design visit. These ranges show what Swindon homeowners typically spend with us, including all trades, strip-out and waste.</p>
+          <p>The biggest factors are the size of the room, whether the layout changes, the door range and the worktop material. Read our full <a href="/advice/how-much-does-a-new-kitchen-cost-swindon">kitchen cost guide</a> for the detail.</p>
+        </div>
+      </div>
+      <div class="prose lg:col-span-7" data-reveal>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th scope="col">Project</th><th scope="col">Typical cost, fitted</th></tr></thead>
+            <tbody>
+              <tr><td>Kitchen refresh: new doors and worktops</td><td>£3,500 – £9,000</td></tr>
+              <tr><td>Compact kitchen, same layout</td><td>£12,000 – £16,000</td></tr>
+              <tr><td>Family kitchen, new layout, quartz worktops</td><td>£18,000 – £26,000</td></tr>
+              <tr><td>Open-plan kitchen with island</td><td>£27,000 – £35,000+</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="k-project">
+    <div class="container-x grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-7"><BeforeAfter before={project.data.before} after={project.data.after} label={project.data.title} /></div>
+      <div class="lg:col-span-5" data-reveal>
+        <p class="eyebrow">Case study</p>
+        <h2 id="k-project" class="mt-3 text-3xl">{project.data.title}</h2>
+        <p class="mt-4 text-ink-soft">{project.data.summary}</p>
+        <a href={`/projects/${project.id}`} class="link-arrow mt-6">Read how we did it <Icon name="arrow" size={18} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="k-faq">
+    <div class="container-x grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <SectionHeading eyebrow="FAQs" title="Kitchen questions" id="k-faq" />
+        <p class="mt-6 text-sm font-bold text-ink">Kitchens fitted across:</p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {AREAS.map((a) => <li><a href={`/${a.slug}`} class="chip chip-quiet">{a.name}</a></li>)}
+        </ul>
+      </div>
+      <div class="lg:col-span-8"><FaqList faqs={faqs} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Let’s plan your new kitchen" />
+</BaseLayout>

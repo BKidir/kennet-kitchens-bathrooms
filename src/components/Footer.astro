@@ -1,0 +1,131 @@
+---
+import Logo from '@/components/ui/Logo.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS, AREAS, KITCHEN_LINKS, BATHROOM_LINKS, IS_DEMO, DEMO_CREDIT } from '@/config';
+
+const company = [
+  { label: 'Projects', href: '/projects' },
+  { label: 'Our process', href: '/our-process' },
+  { label: 'About us', href: '/about' },
+  { label: 'Reviews', href: '/reviews' },
+  { label: 'FAQs', href: '/faqs' },
+  { label: 'Advice', href: '/advice' },
+  { label: 'Get a quote', href: '/get-a-quote' },
+  { label: 'Contact', href: '/contact' },
+];
+const year = new Date().getFullYear();
+const a = BUSINESS.address;
+---
+
+<footer class="on-dark no-print bg-ink text-[#d9dee3]">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12 lg:gap-8 lg:py-20">
+    <div class="lg:col-span-4">
+      <a href="/" class="inline-flex rounded-md">
+        <Logo inverted class="h-14 w-auto" /><span class="sr-only">, home</span>
+      </a>
+      <p class="mt-5 max-w-xs text-sm text-[#a9b4be]">{BUSINESS.tagline}. Established {BUSINESS.foundingYear}.</p>
+
+      <address class="mt-6 space-y-3 text-sm not-italic">
+        <p class="flex gap-3">
+          <Icon name="pin" size={18} class="mt-0.5 flex-none text-brass-light" />
+          <span>
+            <span class="font-bold text-white">{BUSINESS.name}</span><br />
+            {a.street}, {a.locality}, {a.region} {a.postcode}
+          </span>
+        </p>
+        <p class="flex gap-3">
+          <Icon name="phone" size={18} class="mt-0.5 flex-none text-brass-light" />
+          <a href={BUSINESS.phone.href} class="font-bold text-white no-underline hover:underline">{BUSINESS.phone.display}</a>
+        </p>
+        <p class="flex gap-3">
+          <Icon name="mail" size={18} class="mt-0.5 flex-none text-brass-light" />
+          <a href={`mailto:${BUSINESS.email}`} class="text-white no-underline hover:underline">{BUSINESS.email}</a>
+        </p>
+        <div class="flex gap-3">
+          <Icon name="clock" size={18} class="mt-0.5 flex-none text-brass-light" />
+          <dl class="grid grid-cols-[auto_1fr] gap-x-3">
+            {
+              BUSINESS.hours.map((h) => (
+                <>
+                  <dt>{h.short}</dt>
+                  <dd>
+                    {h.opens.replace(/^0/, '')}–{h.closes}
+                  </dd>
+                </>
+              ))
+            }
+            <dt>Sun</dt>
+            <dd>Closed</dd>
+          </dl>
+        </div>
+      </address>
+    </div>
+
+    <nav aria-labelledby="f-kitchens" class="lg:col-span-2">
+      <h2 id="f-kitchens" class="font-sans text-xs font-bold tracking-[0.14em] text-brass-light uppercase">Kitchens</h2>
+      <ul class="mt-4 space-y-1 text-sm">
+        <li><a class="f-link" href="/kitchens">All kitchens</a></li>
+        {KITCHEN_LINKS.map((l) => <li><a class="f-link" href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="f-bathrooms" class="lg:col-span-2">
+      <h2 id="f-bathrooms" class="font-sans text-xs font-bold tracking-[0.14em] text-brass-light uppercase">Bathrooms</h2>
+      <ul class="mt-4 space-y-1 text-sm">
+        <li><a class="f-link" href="/bathrooms">All bathrooms</a></li>
+        {BATHROOM_LINKS.map((l) => <li><a class="f-link" href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="f-areas" class="lg:col-span-2">
+      <h2 id="f-areas" class="font-sans text-xs font-bold tracking-[0.14em] text-brass-light uppercase">Areas we cover</h2>
+      <ul class="mt-4 space-y-1 text-sm">
+        {AREAS.map((ar) => <li><a class="f-link" href={`/${ar.slug}`}>{ar.name}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="f-company" class="lg:col-span-2">
+      <h2 id="f-company" class="font-sans text-xs font-bold tracking-[0.14em] text-brass-light uppercase">Company</h2>
+      <ul class="mt-4 space-y-1 text-sm">
+        {company.map((l) => <li><a class="f-link" href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-x flex flex-col gap-4 py-6 text-[0.8125rem] text-[#a9b4be] md:flex-row md:items-center md:justify-between">
+      <p>
+        © {year} {BUSINESS.legalName}. {BUSINESS.trades.join('. ')}.
+      </p>
+      <ul class="flex gap-4">
+        <li><a class="f-link" href="/privacy">Privacy policy</a></li>
+        <li><a class="f-link" href="/cookies">Cookie policy</a></li>
+      </ul>
+    </div>
+    {
+      IS_DEMO && (
+        <p class="container-x pb-6 text-[0.8125rem] text-[#a9b4be]">
+          <a href={DEMO_CREDIT.url} class="font-semibold text-white underline decoration-white/40 underline-offset-2 hover:decoration-white">
+            {DEMO_CREDIT.text}
+          </a>{' '}
+          — {DEMO_CREDIT.note}
+        </p>
+      )
+    }
+  </div>
+</footer>
+
+<style>
+  .f-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    color: #d9dee3;
+    text-decoration: none;
+  }
+  .f-link:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

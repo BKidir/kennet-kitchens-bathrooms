@@ -1,0 +1,38 @@
+---
+/** Inner-page hero: breadcrumbs, H1, lead, CTAs and an optional image. */
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CtaButtons from '@/components/CtaButtons.astro';
+import Img from '@/components/ui/Img.astro';
+import type { Crumb } from '@/lib/schema';
+import type { ImageKey } from '@/data/images';
+
+interface Props {
+  crumbs: Crumb[];
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  image?: ImageKey;
+  ctas?: boolean;
+}
+const { crumbs, eyebrow, title, lead, image, ctas = true } = Astro.props;
+---
+
+<section class="relative overflow-hidden border-b border-line">
+  <div class:list={['container-x grid items-center gap-10 py-10 sm:py-14', image ? 'lg:grid-cols-12 lg:gap-14 lg:py-16' : 'lg:py-20']}>
+    <div class:list={[image ? 'lg:col-span-6' : 'max-w-3xl']}>
+      <Breadcrumbs items={crumbs} />
+      {eyebrow && <p class="eyebrow mt-8">{eyebrow}</p>}
+      <h1 class:list={['text-balance', eyebrow ? 'mt-3' : 'mt-8']}>{title}</h1>
+      {lead && <p class="lead mt-5">{lead}</p>}
+      <slot />
+      {ctas && <CtaButtons class="mt-8" />}
+    </div>
+    {
+      image && (
+        <div class="lg:col-span-6">
+          <Img image={image} priority sizes="(min-width: 1200px) 560px, (min-width: 1024px) 46vw, 100vw" class="rounded-2xl" />
+        </div>
+      )
+    }
+  </div>
+</section>

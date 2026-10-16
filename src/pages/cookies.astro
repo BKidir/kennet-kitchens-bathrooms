@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import { BUSINESS } from '@/config';
+---
+
+<BaseLayout title="Cookie Policy | Kennet Kitchens & Bathrooms" description="This website sets no cookies: no analytics, advertising or tracking. Here’s what that means and why there’s no cookie banner on our site.">
+  <PageHero crumbs={[{ name: 'Cookie policy', href: '/cookies' }]} title="Cookie Policy" lead="Short version: this website doesn’t set any cookies, so there’s no cookie banner." ctas={false} />
+  <section class="section-tight">
+    <div class="container-x">
+      <p class="mb-10 max-w-2xl rounded-xl border border-brass/40 bg-[#f6efe3] p-4 text-sm text-ink-soft"><strong class="text-ink">Template content.</strong> Sample text for a concept website. Update it if you add analytics, embedded maps, chat widgets or any other third-party service.</p>
+      <div class="prose">
+        <h2>What cookies are</h2>
+        <p>Cookies are small text files a website can store on your device. Some are essential for a site to work; others are used for analytics, advertising or tracking you across websites.</p>
+        <h2>Cookies on this website</h2>
+        <p>We don’t use any. This site has no analytics, advertising pixels, social media embeds or tracking scripts, and it loads no third-party content. Fonts and images are served from our own website.</p>
+        <p>Because we don’t set non-essential cookies, UK law (the Privacy and Electronic Communications Regulations) doesn’t require us to ask for your consent, which is why you won’t see a cookie banner.</p>
+        <h2>Other local storage</h2>
+        <p>Our forms don’t store anything on your device. Information you type is only sent when you press submit, and is used as described in our <a href="/privacy">privacy policy</a>.</p>
+        <h2>Links to other websites</h2>
+        <p>Some pages link to other websites, such as Google Maps. Those sites have their own cookie and privacy policies, which apply once you follow the link.</p>
+        <h2>Changes to this policy</h2>
+        <p>If we ever add a service that uses cookies, we will update this page and ask for your consent before setting any non-essential cookies. Questions? Email <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

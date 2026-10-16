@@ -1,0 +1,78 @@
+---
+/**
+ * Responsive image from the registry (src/data/images.ts).
+ * Real file present -> <picture> with AVIF + WebP, srcset, explicit dimensions.
+ * Missing file      -> neutral placeholder at the same aspect ratio (no CLS).
+ */
+import { Picture } from 'astro:assets';
+import { images, type ImageKey, type Ratio } from '@/data/images';
+import { resolveImage, widthsFor } from '@/lib/images';
+
+interface Props {
+  image: ImageKey;
+  sizes?: string;
+  /** LCP image: eager, fetchpriority=high, sync decode. */
+  priority?: boolean;
+  ratio?: Ratio;
+  class?: string;
+  /** Override alt (e.g. for before/after labelling). */
+  alt?: string;
+}
+
+const { image, sizes = '(min-width: 1024px) 50vw, 100vw', priority = false, ratio, class: className = '', alt } = Astro.props;
+const entry = images[image];
+const src = resolveImage(image);
+const aspect = ratio ?? entry.ratio;
+const altText = alt ?? entry.alt;
+
+const tones: Record<string, [string, string]> = {
+  warm: ['#ece4d8', '#dccfbd'],
+  cool: ['#e4e8ea', '#cfd6da'],
+  sage: ['#e2e6dc', '#c9d1c0'],
+  stone: ['#ebe7e1', '#d8d1c6'],
+  navy: ['#dfe3ea', '#c3cad6'],
+  oak: ['#efe5d6', '#dbc8ad'],
+};
+const [c1, c2] = tones[entry.tone ?? 'warm'];
+---
+
+<div class:list={['img-frame relative overflow-hidden bg-surface', className]} style={`aspect-ratio: ${aspect}`}>
+  {
+    src ? (
+      <Picture
+        src={src}
+        formats={['avif', 'webp']}
+        widths={widthsFor(src)}
+        sizes={sizes}
+        alt={altText}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+    ) : (
+      <div
+        class="ph absolute inset-0 grid items-start justify-items-end p-3 sm:p-4"
+        role={altText ? 'img' : undefined}
+        aria-label={altText || undefined}
+        aria-hidden={altText ? undefined : 'true'}
+        style={`background: linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`}
+        data-placeholder={entry.file}
+      >
+        <svg class="ph-mark absolute top-1/2 left-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 opacity-30" viewBox="0 0 48 48" fill="none" stroke="#1f2933" stroke-width="1.5" aria-hidden="true">
+          <rect x="6" y="10" width="36" height="28" rx="3" />
+          <circle cx="18" cy="20" r="4" />
+          <path d="m6 33 11-10 9 8 6-5 10 9" />
+        </svg>
+        <span class="ph-label max-w-full truncate rounded-full bg-white/75 px-3 py-1 text-[0.75rem] font-semibold text-ink-soft" data-label={entry.file} aria-hidden="true"></span>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  /* Placeholder caption via CSS so it never pollutes accessible names */
+  .ph-label::after {
+    content: attr(data-label);
+  }
+</style>

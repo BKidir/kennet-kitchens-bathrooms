@@ -1,0 +1,127 @@
+---
+/**
+ * Before/after comparison. A native range input drives it, so it works with
+ * pointer, touch, keyboard (arrows, Home/End, PageUp/PageDown) and screen readers.
+ */
+import Img from '@/components/ui/Img.astro';
+import { images, type ImageKey } from '@/data/images';
+
+interface Props {
+  before: ImageKey;
+  after: ImageKey;
+  label: string;
+  class?: string;
+  sizes?: string;
+}
+const { before, after, label, class: className, sizes = '(min-width: 1024px) 60vw, 100vw' } = Astro.props;
+---
+
+<figure class:list={['ba-wrap', className]} data-ba>
+  <div class="ba relative overflow-hidden rounded-2xl select-none" style="--pos: 50%">
+    <Img image={after} sizes={sizes} alt={images[after].alt} />
+    <div class="ba-before absolute inset-0" aria-hidden="true">
+      <Img image={before} sizes={sizes} alt={images[before].alt} class="h-full" ratio={images[after].ratio} />
+    </div>
+    <span class="ba-tag left-3">Before</span>
+    <span class="ba-tag right-3">After</span>
+    <div class="ba-handle pointer-events-none absolute inset-0" aria-hidden="true">
+      <span class="ba-line"></span>
+      <span class="ba-knob">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6" /></svg>
+      </span>
+    </div>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      step="1"
+      class="ba-range"
+      aria-label={`${label}: slide to compare before and after`}
+      aria-valuetext="50% before, 50% after"
+    />
+  </div>
+  <figcaption class="mt-3 text-sm text-ink-muted">
+    {label}. Drag the handle or use the arrow keys to compare. Before: {images[before].alt.replace(/^Before:\s*/i, '')}
+  </figcaption>
+</figure>
+
+<style>
+  .ba-before {
+    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+  }
+  .ba-handle {
+    transform: translateX(calc(var(--pos) - 50%));
+  }
+  .ba-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgb(31 41 51 / 0.15);
+  }
+  .ba-knob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: -1.5rem 0 0 -1.5rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-teal);
+    box-shadow: var(--shadow-lift);
+  }
+  .ba-tag {
+    position: absolute;
+    top: 0.75rem;
+    z-index: 1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgb(31 41 51 / 0.82);
+    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  .ba-range {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    touch-action: pan-y;
+  }
+  .ba:has(.ba-range:focus-visible) {
+    outline: 3px solid var(--color-teal);
+    outline-offset: 3px;
+  }
+  .ba:has(.ba-range:focus-visible) .ba-knob {
+    background: var(--color-teal);
+    color: #fff;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ba]').forEach((root) => {
+    const frame = root.querySelector<HTMLElement>('.ba')!;
+    const range = root.querySelector<HTMLInputElement>('.ba-range')!;
+    const set = () => {
+      const v = Number(range.value);
+      frame.style.setProperty('--pos', `${v}%`);
+      range.setAttribute('aria-valuetext', `${v}% before, ${100 - v}% after`);
+    };
+    range.addEventListener('input', set);
+    set();
+  });
+</script>

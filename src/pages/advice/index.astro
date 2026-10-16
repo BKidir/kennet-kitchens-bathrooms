@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+const posts = (await getCollection('advice')).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout
+  title="Kitchen & Bathroom Advice | Kennet, Swindon"
+  description="Straight answers on kitchen and bathroom costs, timelines and choices from our Swindon design and fitting team. No jargon, no sales pitch."
+  og="advice"
+>
+  <PageHero
+    crumbs={[{ name: 'Advice', href: '/advice' }]}
+    eyebrow="Advice"
+    title="Kitchen and Bathroom Advice from Our Team"
+    lead="The questions we’re asked most at design visits, answered properly: what things cost, how long they take and how to choose between the options."
+    ctas={false}
+  />
+
+  <section class="section">
+    <div class="container-x">
+      <ul class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {
+          posts.map((p, i) => (
+            <li>
+              <article class="card group flex h-full flex-col overflow-hidden" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+                <Img image={p.data.image} class="media-zoom" ratio="16/9" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" />
+                <div class="flex flex-1 flex-col p-6">
+                  <p class="text-sm text-ink-muted">
+                    <time datetime={p.data.published.toISOString()}>{fmt(p.data.published)}</time> · {p.data.readingTime}
+                  </p>
+                  <h2 class="mt-2 text-xl">
+                    <a href={`/advice/${p.id}`} class="stretched no-underline">{p.data.title}</a>
+                  </h2>
+                  <p class="mt-3 flex-1 text-sm text-ink-soft">{p.data.description}</p>
+                  <span class="link-arrow mt-4" aria-hidden="true">Read the guide <Icon name="arrow" size={18} /></span>
+                </div>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

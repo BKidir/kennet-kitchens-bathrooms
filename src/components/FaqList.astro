@@ -1,0 +1,54 @@
+---
+/** Accordion FAQs using native <details>. Optionally emits FAQPage schema. */
+import JsonLd from '@/components/JsonLd.astro';
+import { faqPage, type Faq } from '@/lib/schema';
+import { inlineMd } from '@/lib/inline-md';
+
+interface Props {
+  faqs: Faq[];
+  schema?: boolean;
+  class?: string;
+  headingLevel?: 'h3' | 'h4';
+}
+const { faqs, schema = true, class: className, headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+
+<div class:list={['divide-y divide-line border-y border-line', className]}>
+  {
+    faqs.map((f) => (
+      <details class="faq group">
+        <summary class="flex min-h-16 items-center justify-between gap-6 py-4">
+          <H class="font-sans text-base font-bold tracking-normal text-ink sm:text-lg">{f.q}</H>
+          <span class="grid h-9 w-9 flex-none place-items-center rounded-full border border-line text-teal transition-transform duration-300 group-open:rotate-45">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+        </summary>
+        <div class="prose max-w-3xl pb-6 pr-12" set:html={`<p>${inlineMd(f.a)}</p>`} />
+      </details>
+    ))
+  }
+</div>
+{schema && <JsonLd data={faqPage(faqs)} />}
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary {
+    list-style: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq[open] > div {
+      animation: faq-in 300ms var(--ease-out-soft);
+    }
+  }
+  @keyframes faq-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+</style>

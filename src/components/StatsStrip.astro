@@ -1,0 +1,29 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS } from '@/config';
+const year = new Date().getFullYear();
+const stats = [
+  { icon: 'calendar', value: `${year - BUSINESS.foundingYear} years`, label: `Fitting kitchens and bathrooms since ${BUSINESS.foundingYear}` },
+  { icon: 'home', value: BUSINESS.projectsCompleted, label: 'Projects completed across Swindon and Wiltshire' },
+  { icon: 'shield', value: `${BUSINESS.guaranteeYears}-year`, label: 'Written workmanship guarantee on every job' },
+  { icon: 'users', value: 'Own team', label: 'Our own fitters, tiler and trades. No subcontractors' },
+] as const;
+---
+
+<section aria-label="Why homeowners trust us" class="border-y border-line bg-white">
+  <ul class="container-x grid gap-x-6 gap-y-6 py-10 sm:grid-cols-2 sm:gap-y-8 lg:grid-cols-4">
+    {
+      stats.map((s, i) => (
+        <li class="flex gap-4" data-reveal style={`--reveal-delay:${i * 80}ms`}>
+          <span class="grid h-11 w-11 flex-none place-items-center rounded-full bg-teal-tint text-teal">
+            <Icon name={s.icon} size={22} />
+          </span>
+          <div>
+            <p class="font-serif text-2xl leading-none text-ink">{s.value}</p>
+            <p class="mt-1.5 text-sm leading-snug text-ink-soft">{s.label}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>

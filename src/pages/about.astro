@@ -1,0 +1,92 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import StatsStrip from '@/components/StatsStrip.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS } from '@/config';
+
+const team = [
+  { role: 'Designer', count: 1, text: 'Measures, listens and draws every plan in 3D. Sits in on the final review with your project manager.' },
+  { role: 'Project managers', count: 2, text: 'Your single point of contact on site. Also fully trained fitters, so they know the job from the inside.' },
+  { role: 'Kitchen and bathroom fitters', count: 3, text: 'Cabinetry, scribing, worktops and bathroom fit-out. Most have been with us more than five years.' },
+  { role: 'Tiler', count: 1, text: 'Walls, floors and wet rooms. Sets out every room before the first tile goes on.' },
+  { role: 'Plumber and Gas Safe engineer', count: 1, text: 'Pipework, showers, drainage and gas connections, all certified.' },
+  { role: 'NICEIC-registered electrician', count: 1, text: 'Lighting, sockets, fans and underfloor heating, certified to current regulations.' },
+];
+---
+
+<BaseLayout
+  title="About Kennet Kitchens & Bathrooms | Swindon Fitters"
+  description="A Swindon team of nine fitting kitchens and bathrooms since 2012. Our own designer, fitters, tiler, plumber and electrician. No subcontractors."
+>
+  <PageHero
+    crumbs={[{ name: 'About', href: '/about' }]}
+    eyebrow="About us"
+    title="A Local Team That Designs, Fits and Finishes Every Job"
+    lead={`We started in ${BUSINESS.foundingYear} with one van and a simple idea: the people who plan your kitchen or bathroom should be the people who build it. ${new Date().getFullYear() - BUSINESS.foundingYear} years on, that hasn’t changed.`}
+    image="samples"
+  />
+
+  <StatsStrip />
+
+  <section class="section" aria-labelledby="story-title">
+    <div class="container-x grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <SectionHeading eyebrow="Our story" title="Why we do it this way" id="story-title" />
+      </div>
+      <div class="prose lg:col-span-7" data-reveal>
+        <p>Before Kennet, our founders spent years working as subcontracted fitters for kitchen showrooms and national retailers. They saw the same problems again and again: designs that didn’t fit the room, trades who had never met each other, and homeowners stuck in the middle making phone calls.</p>
+        <p>So we built a company the other way round. We employ every trade we need, from the designer to the electrician. We take on fewer jobs at a time so each one gets proper attention. And we put one project manager in charge of each job, so customers always know who to call.</p>
+        <p>We named the business after the River Kennet, which rises near Avebury and runs east through Marlborough, through the part of Wiltshire where most of us grew up. Today we work across Swindon, north Wiltshire and the southern Cotswolds, and most of our work comes from recommendations and repeat customers.</p>
+        <h3>What we believe</h3>
+        <ul>
+          <li><strong>Design is not an upsell.</strong> A good plan saves money, so it’s free.</li>
+          <li><strong>Quotes should be complete.</strong> Fixed, itemised and in writing.</li>
+          <li><strong>Homes should stay homes.</strong> Tidy sites, and respect for the people living in them.</li>
+          <li><strong>Work should last.</strong> That’s why we guarantee ours for {BUSINESS.guaranteeYears} years.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="team-title">
+    <div class="container-x">
+      <SectionHeading eyebrow="The team" title={`${BUSINESS.teamSize} people, every trade, no subcontractors`} id="team-title" lead="Everyone who works in your home is employed by us, trained by us and accountable to us." />
+      <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {team.map((t, i) => (
+          <li class="rounded-2xl border border-line bg-white p-6" data-reveal style={`--reveal-delay:${(i % 3) * 80}ms`}>
+            <p class="font-serif text-4xl text-teal">{t.count}</p>
+            <h3 class="mt-2 text-xl">{t.role}</h3>
+            <p class="mt-2 text-sm text-ink-soft">{t.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="trades-title">
+    <div class="container-x grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <Img image="vanTools" class="rounded-2xl" sizes="(min-width: 1024px) 50vw, 100vw" />
+      <div data-reveal>
+        <p class="eyebrow">Registrations</p>
+        <h2 id="trades-title" class="mt-3">Qualified trades, certified work</h2>
+        <ul class="mt-6 space-y-4">
+          {BUSINESS.trades.map((t) => (
+            <li class="flex gap-3"><Icon name="shield" size={22} class="flex-none text-teal" /><span>{t}. Certificates are included in your handover pack.</span></li>
+          ))}
+          <li class="flex gap-3"><Icon name="shield" size={22} class="flex-none text-teal" /><span>Public liability insurance and a {BUSINESS.guaranteeYears}-year written workmanship guarantee on every project.</span></li>
+          <li class="flex gap-3"><Icon name="shield" size={22} class="flex-none text-teal" /><span>Waste removed by licensed carriers, with reusable items donated where possible.</span></li>
+        </ul>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="/our-process" class="link-arrow">How we work <Icon name="arrow" size={18} /></a>
+          <a href="/projects" class="link-arrow">See our projects <Icon name="arrow" size={18} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

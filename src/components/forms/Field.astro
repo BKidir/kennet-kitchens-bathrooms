@@ -1,0 +1,51 @@
+---
+/** Labelled text input/select/textarea with hint and an error slot wired via aria-describedby. */
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'input'>, 'name' | 'id'> {
+  name: string;
+  label: string;
+  hint?: string;
+  as?: 'input' | 'textarea' | 'select';
+  options?: string[];
+  optional?: boolean;
+  msgRequired?: string;
+  msgPattern?: string;
+  class?: string;
+  idPrefix?: string;
+  rows?: number;
+}
+const { name, label, hint, as = 'input', options = [], optional = false, msgRequired, msgPattern, class: className, idPrefix = '', ...rest } = Astro.props;
+const id = `${idPrefix}${name}`;
+const describedBy = [hint && `${id}-hint`, `${name}-error`].filter(Boolean).join(' ');
+const common = {
+  id,
+  name,
+  class: 'input',
+  required: !optional,
+  'aria-describedby': describedBy,
+  'data-msg-required': msgRequired,
+  'data-msg-pattern': msgPattern,
+};
+---
+
+<div class:list={['field', className]}>
+  <label for={id} class="field-label">
+    {label}
+    {optional && <span class="font-normal text-ink-muted"> (optional)</span>}
+  </label>
+  {hint && <span id={`${id}-hint`} class="field-hint">{hint}</span>}
+  {as === 'textarea' && <textarea {...common} {...(rest as object)} />}
+  {
+    as === 'select' && (
+      <select {...common}>
+        <option value="">Please choose</option>
+        {options.map((o) => (
+          <option>{o}</option>
+        ))}
+      </select>
+    )
+  }
+  {as === 'input' && <input {...common} {...rest} />}
+  <p id={`${name}-error`} class="field-error" aria-live="polite"></p>
+</div>

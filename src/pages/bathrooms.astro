@@ -1,0 +1,127 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import BeforeAfter from '@/components/BeforeAfter.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { AREAS } from '@/config';
+import { service } from '@/lib/schema';
+
+const services = (await getCollection('services')).filter((s) => s.data.category === 'bathrooms').sort((a, b) => a.data.order - b.data.order);
+const project = (await getCollection('projects')).find((p) => p.data.category === 'bathrooms')!;
+
+const details = [
+  { title: 'Waterproofing you can’t see', text: 'Every shower and wet area is tanked before tiling, with taped joints and corners. It’s the part most bathroom failures come back to.', icon: 'droplet' as const },
+  { title: 'One team for every trade', text: 'Our plumber, electrician and tiler work together every week, so the job doesn’t stall waiting for the next trade to turn up.', icon: 'users' as const },
+  { title: 'Toilet back on day one', text: 'If it’s your only bathroom, we plan the work so you’re without a toilet for as little time as possible, usually just a day.', icon: 'clock' as const },
+  { title: 'Floors checked, not covered', text: 'Old leaks often rot the joists under a bath. We check, show you photos and fix it properly before anything new goes in.', icon: 'clipboard' as const },
+];
+
+const faqs = [
+  { q: 'How much does a new bathroom cost?', a: 'Most of our bathrooms cost between £8,000 and £20,000 fully fitted. A like-for-like replacement sits at the lower end; a new layout with a freestanding bath, walk-in shower and underfloor heating sits at the top.' },
+  { q: 'How long does a bathroom installation take?', a: 'Usually eight to twelve working days. See our [week-by-week bathroom timeline](/advice/how-long-does-a-bathroom-installation-take) for what happens on each day.' },
+  { q: 'Should I choose a wet room or a walk-in shower?', a: 'It depends on your floor, budget and whether level access matters. Our guide to [wet rooms vs walk-in showers](/advice/wet-room-vs-walk-in-shower) compares the two.' },
+  { q: 'Can you help if someone in the family has limited mobility?', a: 'Yes. We design [accessible bathrooms](/accessible-bathrooms) with level access, seats and grab rails that look like any modern bathroom, and we can work to an occupational therapist’s report.' },
+];
+---
+
+<BaseLayout
+  title="Bathroom Fitters in Swindon | Bathrooms & Wet Rooms"
+  description="Bathrooms, en-suites, wet rooms and cloakrooms fitted in Swindon by our own plumber, electrician and tiler. Fixed quotes from £8k and a 10-year guarantee."
+  og="bathrooms"
+  heroImage="panelledBathroom"
+  heroSizes="(min-width: 1200px) 560px, (min-width: 1024px) 46vw, 100vw"
+  schema={[service(Astro.site, { name: 'Bathroom fitting in Swindon', description: 'Bathroom, en-suite, wet room and cloakroom design and installation across Swindon and Wiltshire.', path: '/bathrooms', serviceType: 'Bathroom design and installation' })]}
+>
+  <PageHero
+    crumbs={[{ name: 'Bathrooms', href: '/bathrooms' }]}
+    eyebrow="Bathrooms"
+    title="Bathroom Fitters in Swindon for Every Size of Room"
+    lead="Family bathrooms, en-suites, wet rooms and downstairs toilets, planned in 3D and built by one team who handle the plumbing, electrics, waterproofing and tiling themselves."
+    image="panelledBathroom"
+  />
+
+  <section class="section" aria-labelledby="b-services">
+    <div class="container-x">
+      <SectionHeading eyebrow="Bathroom services" title="From a cloakroom to a complete wet room" id="b-services" lead="Choose the type of room you’re planning to see how we approach it, typical prices and timelines." />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((s, i) => <ServiceCard href={`/${s.id}`} title={s.data.name} text={s.data.summary} image={s.data.image} delay={(i % 3) * 70} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-dark bg-ink text-[#d9dee3]" aria-labelledby="b-details">
+    <div class="container-x">
+      <div data-reveal class="max-w-2xl">
+        <p class="eyebrow">The details</p>
+        <h2 id="b-details" class="mt-3 text-white">What goes into a bathroom that lasts</h2>
+        <p class="mt-4 text-lg text-[#a9b4be]">A bathroom is judged on the tiles and taps, but it succeeds or fails on what’s behind them. These are the things we never skip.</p>
+      </div>
+      <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {details.map((d, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 80}ms`}>
+            <span class="grid h-12 w-12 place-items-center rounded-full border border-white/15 text-brass-light"><Icon name={d.icon} size={22} /></span>
+            <h3 class="mt-4 text-xl text-white">{d.title}</h3>
+            <p class="mt-2 text-[#a9b4be]">{d.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="b-cost">
+    <div class="container-x grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <SectionHeading eyebrow="Prices" title="Typical bathroom prices" id="b-cost" />
+        <div class="prose mt-5">
+          <p>Your quote is fixed and itemised after a free design visit, covering the suite, tiles, labour, plumbing, electrics and waste. These ranges reflect what our customers across Swindon and Wiltshire typically spend.</p>
+          <p>Not sure which room type fits your budget? Ask at your design visit and we’ll show you options at two or three price points.</p>
+        </div>
+      </div>
+      <div class="prose lg:col-span-7" data-reveal>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th scope="col">Project</th><th scope="col">Typical cost, fitted</th></tr></thead>
+            <tbody>
+              <tr><td>Cloakroom or downstairs WC</td><td>£3,500 – £8,000</td></tr>
+              <tr><td>En-suite shower room</td><td>£7,500 – £14,000</td></tr>
+              <tr><td>Family bathroom</td><td>£8,000 – £20,000</td></tr>
+              <tr><td>Wet room or accessible bathroom</td><td>£10,000 – £19,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="b-project">
+    <div class="container-x grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-7"><BeforeAfter before={project.data.before} after={project.data.after} label={project.data.title} /></div>
+      <div class="lg:col-span-5" data-reveal>
+        <p class="eyebrow">Case study</p>
+        <h2 id="b-project" class="mt-3 text-3xl">{project.data.title}</h2>
+        <p class="mt-4 text-ink-soft">{project.data.summary}</p>
+        <a href={`/projects/${project.id}`} class="link-arrow mt-6">Read how we did it <Icon name="arrow" size={18} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="b-faq">
+    <div class="container-x grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <SectionHeading eyebrow="FAQs" title="Bathroom questions" id="b-faq" />
+        <p class="mt-6 text-sm font-bold text-ink">Bathrooms fitted across:</p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {AREAS.map((a) => <li><a href={`/${a.slug}`} class="chip chip-quiet">{a.name}</a></li>)}
+        </ul>
+      </div>
+      <div class="lg:col-span-8"><FaqList faqs={faqs} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Let’s plan your new bathroom" />
+</BaseLayout>

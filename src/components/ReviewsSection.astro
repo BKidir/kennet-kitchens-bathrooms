@@ -1,0 +1,24 @@
+---
+import SectionHeading from '@/components/SectionHeading.astro';
+import ReviewCard from '@/components/ReviewCard.astro';
+import { REVIEWS } from '@/data/content';
+interface Props {
+  count?: number;
+  link?: boolean;
+  title?: string;
+}
+const { count = 3, link = true, title = 'What our customers say' } = Astro.props;
+---
+
+<section class="section bg-surface" aria-labelledby="reviews-title">
+  <div class="container-x">
+    <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <SectionHeading eyebrow="Reviews" title={title} id="reviews-title" />
+      {link && <a href="/reviews" class="link-arrow">Read more reviews <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>}
+    </div>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      {REVIEWS.slice(0, count).map((r, i) => <ReviewCard review={r} delay={i * 90} />)}
+    </div>
+    <p class="mt-6 text-[0.8125rem] text-ink-muted">Sample reviews: illustrative text for this concept website, not from real customers.</p>
+  </div>
+</section>

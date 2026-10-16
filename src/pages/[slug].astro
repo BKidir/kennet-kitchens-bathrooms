@@ -1,0 +1,271 @@
+---
+/**
+ * Root-level dynamic pages: service pages (/wet-rooms) and area pages
+ * (/kitchen-bathroom-fitters-swindon). Content lives in src/content/.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import AtAGlance from '@/components/AtAGlance.astro';
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { service as serviceSchema } from '@/lib/schema';
+import { AREAS, BUSINESS } from '@/config';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  const areas = await getCollection('areas');
+  return [
+    ...services.map((entry) => ({ params: { slug: entry.id }, props: { kind: 'service' as const, entry } })),
+    ...areas.map((entry) => ({ params: { slug: entry.id }, props: { kind: 'area' as const, entry } })),
+  ];
+}
+
+type Props =
+  | { kind: 'service'; entry: CollectionEntry<'services'> }
+  | { kind: 'area'; entry: CollectionEntry<'areas'> };
+
+const { kind, entry } = Astro.props;
+const { Content } = await render(entry);
+const allServices = (await getCollection('services')).sort((a, b) =>
+  a.data.category === b.data.category ? a.data.order - b.data.order : a.data.category === 'kitchens' ? -1 : 1,
+);
+const allProjects = await getCollection('projects');
+const areaName = (slug: string) => AREAS.find((a) => a.slug === slug)?.name ?? slug;
+
+// Service-specific data
+const svc = kind === 'service' ? entry.data : null;
+const related = svc ? svc.related.map((id) => allServices.find((s) => s.id === id)!).filter(Boolean) : [];
+const projects = svc ? allProjects.filter((p) => svc.projects.includes(p.id)) : [];
+const hub = svc ? (svc.category === 'kitchens' ? { name: 'Kitchens', href: '/kitchens' } : { name: 'Bathrooms', href: '/bathrooms' }) : null;
+
+// Area-specific data
+const area = kind === 'area' ? entry.data : null;
+
+const title = entry.data.title;
+const description = entry.data.description;
+const crumbs = svc ? [hub!, { name: svc.name, href: `/${entry.id}` }] : [{ name: `Fitters in ${area!.town}`, href: `/${entry.id}` }];
+const schema = svc
+  ? [serviceSchema(Astro.site, { name: svc.h1, description, path: `/${entry.id}`, serviceType: svc.serviceType })]
+  : [];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  og={svc ? (svc.category === 'kitchens' ? 'kitchens' : 'bathrooms') : 'areas'}
+  heroImage={entry.data.image}
+  heroSizes="(min-width: 1200px) 560px, (min-width: 1024px) 46vw, 100vw"
+  schema={schema}
+>
+  <PageHero
+    crumbs={crumbs}
+    eyebrow={svc ? (svc.category === 'kitchens' ? 'Kitchens' : 'Bathrooms') : `Serving ${area!.town}`}
+    title={entry.data.h1}
+    lead={entry.data.lead}
+    image={entry.data.image}
+  />
+
+  <section class="section">
+    <div class="container-x grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="prose lg:col-span-7 xl:col-span-8">
+        <Content />
+      </div>
+      <aside class="lg:col-span-5 xl:col-span-4" aria-label={svc ? 'At a glance' : `Areas we cover around ${area!.town}`}>
+        <div class="space-y-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
+          {svc && <AtAGlance price={svc.facts.price} duration={svc.facts.duration} includes={svc.facts.includes} />}
+          {
+            area && (
+              <div class="rounded-2xl border border-line bg-white p-6 sm:p-8">
+                <h2 class="text-2xl">Where we work around {area.town}</h2>
+                <ul class="mt-4 grid grid-cols-1 gap-x-4 gap-y-1.5 text-sm text-ink-soft sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                  {area.neighbourhoods.map((n) => (
+                    <li class="flex gap-2">
+                      <Icon name="pin" size={16} class="mt-1 flex-none text-brass" />
+                      {n}
+                    </li>
+                  ))}
+                </ul>
+                <p class="mt-5 border-t border-line pt-5 text-sm text-ink-soft">
+                  <Icon name="clock" size={16} class="mr-1.5 inline-block align-[-3px] text-teal" />
+                  {area.travel}
+                </p>
+                <div class="mt-6 grid gap-3">
+                  <a href="/get-a-quote" class="btn btn-primary w-full">Book a free design visit</a>
+                  <a href={BUSINESS.phone.href} class="btn btn-secondary w-full">
+                    <Icon name="phone" size={18} /> {BUSINESS.phone.display}
+                  </a>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {/* Service: related projects and photos */}
+  {
+    svc && (projects.length > 0 || svc.gallery.length > 0) && (
+      <section class="section bg-surface" aria-labelledby="work-title">
+        <div class="container-x">
+          <SectionHeading eyebrow="Our work" title={`Recent ${svc.name.toLowerCase()} projects`} id="work-title" />
+          <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((p, i) => (
+              <ProjectCard project={p} delay={i * 80} />
+            ))}
+            {svc.gallery.map((img, i) => (
+              <figure data-reveal style={`--reveal-delay:${(projects.length + i) * 80}ms`}>
+                <Img image={img} class="rounded-[var(--radius-card)]" ratio="4/3" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" />
+              </figure>
+            ))}
+          </div>
+          <a href="/projects" class="link-arrow mt-8">
+            See all projects <Icon name="arrow" size={18} />
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  {/* Area: local project */}
+  {
+    area && (
+      <section class="section bg-surface" aria-labelledby="local-title">
+        <div class="container-x grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Img image={area.project.image} class="rounded-2xl" sizes="(min-width: 1024px) 50vw, 100vw" />
+          <div data-reveal>
+            <p class="eyebrow">Local project</p>
+            <h2 id="local-title" class="mt-3">{area.project.title}</h2>
+            <p class="lead mt-4">{area.project.text}</p>
+            {area.project.href ? (
+              <a href={area.project.href} class="link-arrow mt-6">
+                Read the full case study <Icon name="arrow" size={18} />
+              </a>
+            ) : (
+              <a href="/projects" class="link-arrow mt-6">
+                Browse more projects <Icon name="arrow" size={18} />
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    area && (
+      <section class="section" aria-labelledby="services-title">
+        <div class="container-x">
+          <SectionHeading eyebrow="Services" title={`What we fit in ${area.town}`} id="services-title" lead="Every service below is available across the area, with the same team, fixed quotes and 10-year guarantee." />
+          <div class="mt-10 grid gap-10 lg:grid-cols-2">
+            {(['kitchens', 'bathrooms'] as const).map((cat) => (
+              <div>
+                <h3 class="flex items-baseline justify-between gap-4 border-b border-line pb-3 text-2xl">
+                  {cat === 'kitchens' ? 'Kitchens' : 'Bathrooms'}
+                  <a href={`/${cat}`} class="link font-sans text-sm">
+                    All {cat}
+                  </a>
+                </h3>
+                <ul class="divide-y divide-line">
+                  {allServices
+                    .filter((s) => s.data.category === cat)
+                    .map((s) => (
+                      <li>
+                        <a href={`/${s.id}`} class="group flex items-start justify-between gap-4 py-4 no-underline">
+                          <span>
+                            <span class="block font-bold text-ink group-hover:text-teal">{s.data.name}</span>
+                            <span class="block text-sm text-ink-soft">{s.data.summary}</span>
+                          </span>
+                          <Icon name="arrow" size={18} class="mt-1 flex-none text-teal transition-transform group-hover:translate-x-1" />
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    entry.data.faqs.length > 0 && (
+      <section class:list={['section', area && 'bg-surface']} aria-labelledby="faq-title">
+        <div class="container-x grid gap-10 lg:grid-cols-12">
+          <div class="lg:col-span-4">
+            <SectionHeading eyebrow="FAQs" title={svc ? `${svc.name}: your questions` : `Questions from ${area!.town} homeowners`} id="faq-title" />
+            <a href="/faqs" class="link-arrow mt-6">
+              All FAQs <Icon name="arrow" size={18} />
+            </a>
+          </div>
+          <div class="lg:col-span-8">
+            <FaqList faqs={entry.data.faqs} />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    svc && (
+      <section class="section bg-surface" aria-labelledby="related-title">
+        <div class="container-x">
+          <SectionHeading eyebrow="Related services" title="You might also need" id="related-title" />
+          <div class="mt-10 grid gap-6 md:grid-cols-3">
+            {related.map((r, i) => (
+              <ServiceCard href={`/${r.id}`} title={r.data.name} text={r.data.summary} image={r.data.image} delay={i * 80} />
+            ))}
+          </div>
+          <div class="mt-12 border-t border-line pt-8">
+            <h3 class="font-sans text-sm font-bold tracking-[0.12em] text-brass-text uppercase">{svc.name} near you</h3>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {svc.areas.map((slug) => (
+                <li>
+                  <a href={`/${slug}`} class="chip">
+                    {svc.name} in {areaName(slug)}
+                  </a>
+                </li>
+              ))}
+              {AREAS.filter((a) => !svc.areas.includes(a.slug)).map((a) => (
+                <li>
+                  <a href={`/${a.slug}`} class="chip chip-quiet">
+                    {a.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    area && (
+      <section class="section-tight" aria-labelledby="nearby-title">
+        <div class="container-x">
+          <h2 id="nearby-title" class="text-2xl">Also near {area.town}</h2>
+          <ul class="mt-5 flex flex-wrap gap-2">
+            {area.nearby.map((slug) => (
+              <li>
+                <a href={`/${slug}`} class="chip">
+                  Kitchen and bathroom fitters in {areaName(slug)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand />
+</BaseLayout>
+

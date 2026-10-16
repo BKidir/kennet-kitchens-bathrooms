@@ -1,0 +1,30 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { PROCESS } from '@/data/content';
+interface Props {
+  detailed?: boolean;
+}
+const { detailed = false } = Astro.props;
+---
+
+<ol class:list={['grid gap-6', detailed ? 'md:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-5']}>
+  {
+    PROCESS.map((s, i) => (
+      <li class="relative rounded-[var(--radius-card)] border border-line bg-white p-6" data-reveal style={`--reveal-delay:${i * 80}ms`}>
+        <div class="flex items-center justify-between">
+          <span class="grid h-11 w-11 place-items-center rounded-full bg-teal-tint text-teal">
+            <Icon name={s.icon} size={22} />
+          </span>
+          <span class="font-serif text-3xl text-surface-2" aria-hidden="true">
+            0{i + 1}
+          </span>
+        </div>
+        <h3 class="mt-5 text-xl">
+          <span class="sr-only">Step {i + 1}: </span>
+          {s.title}
+        </h3>
+        <p class="mt-2 text-sm text-ink-soft">{detailed ? s.text : s.short}</p>
+      </li>
+    ))
+  }
+</ol>

@@ -1,0 +1,30 @@
+---
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+interface Props {
+  project: CollectionEntry<'projects'>;
+  delay?: number;
+  headingLevel?: 'h2' | 'h3';
+}
+const { project, delay = 0, headingLevel = 'h3' } = Astro.props;
+const d = project.data;
+const H = headingLevel;
+const label = { kitchens: 'Kitchen', bathrooms: 'Bathroom', 'wet-rooms': 'Wet room' }[d.category];
+---
+
+<article class="card group flex h-full flex-col overflow-hidden" data-reveal style={`--reveal-delay:${delay}ms`}>
+  <Img image={d.after} class="media-zoom" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" />
+  <div class="flex flex-1 flex-col p-6">
+    <p class="text-xs font-bold tracking-[0.12em] text-brass-text uppercase">{label} · {d.location}</p>
+    <H class="mt-2 text-xl">
+      <a href={`/projects/${project.id}`} class="stretched no-underline">{d.title}</a>
+    </H>
+    <p class="mt-2 flex-1 text-sm text-ink-soft">{d.summary}</p>
+    <dl class="mt-4 flex gap-6 border-t border-line pt-4 text-sm">
+      <div><dt class="text-ink-muted">Duration</dt><dd class="font-bold">{d.duration}</dd></div>
+      <div><dt class="text-ink-muted">Budget</dt><dd class="font-bold">{d.budget}</dd></div>
+    </dl>
+    <span class="link-arrow mt-2" aria-hidden="true">Read the case study <Icon name="arrow" size={18} /></span>
+  </div>
+</article>

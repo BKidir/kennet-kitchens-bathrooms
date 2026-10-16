@@ -1,0 +1,14 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS, QUOTE_HREF } from '@/config';
+interface Props {
+  class?: string;
+  quoteLabel?: string;
+}
+const { class: className, quoteLabel = 'Get a free quote' } = Astro.props;
+---
+
+<div class:list={['flex flex-col gap-3 sm:flex-row sm:flex-wrap', className]}>
+  <a href={QUOTE_HREF} class="btn btn-primary">{quoteLabel} <Icon name="arrow" size={18} /></a>
+  <a href={BUSINESS.phone.href} class="btn btn-secondary"><Icon name="phone" size={18} /> Call {BUSINESS.phone.display}</a>
+</div>

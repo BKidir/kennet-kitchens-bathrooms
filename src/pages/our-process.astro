@@ -1,0 +1,109 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { PROCESS } from '@/data/content';
+import type { ImageKey } from '@/data/images';
+
+const detail: { when: string; points: string[]; image: ImageKey }[] = [
+  {
+    when: 'Within 1–2 weeks of your call',
+    points: ['About an hour, at home, including Saturday mornings', 'Laser measure and checks on pipes, walls, floors and electrics', 'An honest conversation about budget, with ranges based on real projects'],
+    image: 'samples',
+  },
+  {
+    when: 'Within 10 working days of the visit',
+    points: ['Floor plan and 3D visuals of your actual room', 'Real samples of doors, worktops, tiles and handles', 'Changes made until it’s right, often while you watch'],
+    image: 'kitchenDesign',
+  },
+  {
+    when: 'With your final design',
+    points: ['Every item listed: materials, labour, trades, waste', 'Stage payments written in, balance only on completion', 'The price only changes if you change the plan'],
+    image: 'costGuide',
+  },
+  {
+    when: 'Usually booked 6–10 weeks ahead',
+    points: ['Our own fitters, plumber, electrician and tiler', 'A daily schedule, and an evening update with photos', 'Floor protection, dust sheets and a clean site every evening'],
+    image: 'vanTools',
+  },
+  {
+    when: 'On the last day, and for years after',
+    points: ['A walk-round with you to fix any snags straight away', 'A handover pack with warranties and certificates', 'A 10-year workmanship guarantee and a number that gets answered'],
+    image: 'oldTownAfter',
+  },
+];
+---
+
+<BaseLayout
+  title="Our Process: From Design Visit to Handover | Kennet"
+  description="How a Kennet kitchen or bathroom project works: free home visit, 3D design, fixed written quote, installation by our own team and a 10-year guarantee."
+>
+  <PageHero
+    crumbs={[{ name: 'Our process', href: '/our-process' }]}
+    eyebrow="How we work"
+    title="Our Process, from First Visit to Final Clean"
+    lead="Five clear stages, one small team and no surprises. Here’s exactly what happens when you choose Kennet for your kitchen or bathroom, and when."
+  />
+
+  <section class="section">
+    <div class="container-x">
+      <ol class="space-y-16 sm:space-y-24">
+        {
+          PROCESS.map((step, i) => (
+            <li class="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+              <div class:list={['order-2', i % 2 ? 'lg:order-2' : 'lg:order-1']} data-reveal>
+                <p class="flex items-center gap-3">
+                  <span class="grid h-11 w-11 place-items-center rounded-full bg-teal text-white">
+                    <Icon name={step.icon} size={22} />
+                  </span>
+                  <span class="text-sm font-bold text-brass-text">Step {i + 1} · {detail[i].when}</span>
+                </p>
+                <h2 class="mt-5">{step.title}</h2>
+                <p class="lead mt-4">{step.text}</p>
+                <ul class="mt-6 space-y-3">
+                  {detail[i].points.map((p) => (
+                    <li class="flex gap-3">
+                      <Icon name="check" size={20} class="mt-0.5 flex-none text-teal" strokeWidth={2.25} />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div class:list={['order-1', i % 2 ? 'lg:order-1' : 'lg:order-2']}>
+                <Img image={detail[i].image} class="rounded-2xl" sizes="(min-width: 1024px) 50vw, 100vw" />
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="promise-title">
+    <div class="container-x">
+      <SectionHeading eyebrow="Our promises" title="What you can hold us to" id="promise-title" align="center" />
+      <ul class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
+        <li class="rounded-2xl border border-line bg-white p-6" data-reveal>
+          <h3 class="text-xl">The price is the price</h3>
+          <p class="mt-2 text-ink-soft">If we discover something hidden, like rot under a floor, we stop, show you photos and agree the cost in writing before carrying on.</p>
+        </li>
+        <li class="rounded-2xl border border-line bg-white p-6" data-reveal style="--reveal-delay:90ms">
+          <h3 class="text-xl">A tidy home</h3>
+          <p class="mt-2 text-ink-soft">Protection down on day one, dust controlled, waste removed and the work area cleaned every evening.</p>
+        </li>
+        <li class="rounded-2xl border border-line bg-white p-6" data-reveal style="--reveal-delay:180ms">
+          <h3 class="text-xl">One person to call</h3>
+          <p class="mt-2 text-ink-soft">Your project manager’s mobile number, from design sign-off to the last snag, with a short update every working day.</p>
+        </li>
+      </ul>
+      <p class="mt-10 text-center">
+        Got a question about the process? <a href="/faqs" class="link">Read our FAQs</a> or see the process in action in our <a href="/projects" class="link">case studies</a>.
+      </p>
+    </div>
+  </section>
+
+  <CtaBand title="Start with step one" text="Book your free home visit. It takes about an hour, and there’s no obligation to go ahead." />
+</BaseLayout>

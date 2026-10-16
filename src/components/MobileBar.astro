@@ -1,0 +1,16 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS, QUOTE_HREF } from '@/config';
+---
+
+<div
+  class="no-print fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden"
+  data-mobile-bar
+>
+  <div class="mx-auto grid max-w-md grid-cols-2 gap-2">
+    <a href={BUSINESS.phone.href} class="btn btn-secondary min-h-12 w-full px-3">
+      <Icon name="phone" size={18} /> Call us
+    </a>
+    <a href={QUOTE_HREF} class="btn btn-primary min-h-12 w-full px-3">Get a quote</a>
+  </div>
+</div>

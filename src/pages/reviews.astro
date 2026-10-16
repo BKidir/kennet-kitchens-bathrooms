@@ -1,0 +1,37 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import ReviewCard from '@/components/ReviewCard.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { REVIEWS } from '@/data/content';
+---
+
+<BaseLayout
+  title="Customer Reviews | Kennet Kitchens & Bathrooms"
+  description="What homeowners across Swindon, Wroughton, Royal Wootton Bassett and the Cotswolds say about their new kitchens and bathrooms from Kennet."
+>
+  <PageHero
+    crumbs={[{ name: 'Reviews', href: '/reviews' }]}
+    eyebrow="Reviews"
+    title="What Our Customers Say"
+    lead="Most of our work comes from recommendations. Here’s what homeowners tell us once the dust sheets are gone."
+  />
+
+  <section class="section">
+    <div class="container-x">
+      <p class="mb-8 inline-block rounded-full bg-surface px-4 py-2 text-[0.8125rem] font-semibold text-ink-soft">
+        Sample reviews: illustrative text for this concept website, not from real customers.
+      </p>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {REVIEWS.map((r, i) => <ReviewCard review={r} delay={(i % 3) * 90} />)}
+      </div>
+      <div class="prose mt-16 max-w-2xl">
+        <h2>Leave us a review</h2>
+        <p>If we’ve fitted your kitchen or bathroom, we’d love to hear how you’re getting on with it. Your project manager will send you a link after handover, or you can email us at any time. If something isn’t right, please tell us first so we can put it right.</p>
+        <p>Want to see the work behind the words? Browse our <a href="/projects">recent projects</a> or read about <a href="/our-process">how we work</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

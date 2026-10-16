@@ -1,0 +1,15 @@
+---
+/**
+ * Kennet logo: horizontal lockup (arch mark + outlined wordmark).
+ * Source of truth is scripts/generate-assets.mjs, which writes /public/brand/*.svg.
+ * Served as a cached SVG file rather than inlined into every page.
+ */
+interface Props {
+  class?: string;
+  inverted?: boolean;
+}
+const { class: className, inverted = false } = Astro.props;
+const src = inverted ? '/brand/kennet-logo-horizontal-reversed.svg' : '/brand/kennet-logo-horizontal.svg';
+---
+
+<img src={src} alt="Kennet Kitchens & Bathrooms" width="162" height="52" class={className} decoding="async" />

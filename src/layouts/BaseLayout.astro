@@ -1,0 +1,78 @@
+---
+import '@/styles/global.css';
+import Seo, { type OgType } from '@/components/Seo.astro';
+import JsonLd from '@/components/JsonLd.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import MobileBar from '@/components/MobileBar.astro';
+import { heroPreload } from '@/lib/images';
+import type { ImageKey } from '@/data/images';
+
+interface Props {
+  title: string;
+  description: string;
+  og?: OgType;
+  ogImageUrl?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  published?: Date;
+  /** LCP image to preload (only takes effect once a real photo exists). */
+  heroImage?: ImageKey;
+  heroSizes?: string;
+  schema?: object[];
+}
+
+const { heroImage, heroSizes = '100vw', schema = [], ...seo } = Astro.props;
+const preload = heroImage ? await heroPreload(heroImage, heroSizes) : null;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+    <link rel="preload" href="/fonts/fraunces-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    {preload && <link rel="preload" as="image" type="image/avif" href={preload.href} imagesrcset={preload.srcset} imagesizes={preload.sizes} fetchpriority="high" />}
+    <Seo {...seo} />
+    <meta name="theme-color" content="#faf8f5" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {schema.length > 0 && <JsonLd data={schema} />}
+  </head>
+  <body class="min-h-dvh pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <Header />
+    <main id="main" tabindex="-1" class="outline-none">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <script>
+      import '@/scripts/reveal';
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    background: var(--color-ink);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

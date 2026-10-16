@@ -1,0 +1,260 @@
+---
+/**
+ * Image grid with optional category filter and a <dialog> lightbox.
+ * Without JS: all items show and case-study links still work; only the viewer needs JS.
+ */
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { images } from '@/data/images';
+import { CATEGORY_LABELS, type GalleryItem, type GalleryCategory } from '@/data/gallery';
+
+interface Props {
+  items: GalleryItem[];
+  filter?: boolean;
+  id?: string;
+}
+const { items, filter = false, id = 'gallery' } = Astro.props;
+const cats = [...new Set(items.map((i) => i.category))] as GalleryCategory[];
+---
+
+<div class="gallery" data-gallery id={id}>
+  {
+    filter && (
+      <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter projects" data-filters hidden>
+        <button type="button" class="filter-btn" aria-pressed="true" data-filter="all">
+          All
+        </button>
+        {cats.map((c) => (
+          <button type="button" class="filter-btn" aria-pressed="false" data-filter={c}>
+            {CATEGORY_LABELS[c]}
+          </button>
+        ))}
+      </div>
+    )
+  }
+  <p class="sr-only" aria-live="polite" data-status></p>
+  <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+    {
+      items.map((item, i) => (
+        <li data-category={item.category} data-index={i}>
+          <figure class="group relative">
+            <button type="button" class="tile block w-full overflow-hidden rounded-[var(--radius-card)] text-left" data-open={i} aria-label={`Enlarge photo: ${item.title}, ${item.location}`}>
+              <Img image={item.image} class="media-zoom" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" ratio="4/3" />
+              <span class="tile-icon" aria-hidden="true">
+                <Icon name="expand" size={18} />
+              </span>
+            </button>
+            <figcaption class="mt-3 flex items-baseline justify-between gap-3 text-sm">
+              <span>
+                <span class="font-bold text-ink">{item.title}</span>
+                <span class="text-ink-muted"> · {item.location}</span>
+              </span>
+              {item.href && (
+                <a href={item.href} class="link whitespace-nowrap">
+                  Case study<span class="sr-only">: {item.title}</span>
+                </a>
+              )}
+            </figcaption>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="lightbox" aria-label="Project photo viewer" data-lightbox>
+    <div class="flex h-full flex-col">
+      <div class="flex items-center justify-between gap-4 p-3 sm:p-4">
+        <p class="text-sm text-white" data-lb-count aria-live="polite"></p>
+        <button type="button" class="lb-btn" data-lb-close>
+          <Icon name="close" size={22} /><span class="sr-only">Close photo viewer</span>
+        </button>
+      </div>
+      <div class="relative flex flex-1 items-center justify-center px-3 sm:px-20">
+        <div class="w-full max-w-5xl" data-lb-stage></div>
+        <button type="button" class="lb-btn lb-nav left-2 sm:left-5" data-lb-prev>
+          <Icon name="chevronLeft" size={24} /><span class="sr-only">Previous photo</span>
+        </button>
+        <button type="button" class="lb-btn lb-nav right-2 sm:right-5" data-lb-next>
+          <Icon name="chevronRight" size={24} /><span class="sr-only">Next photo</span>
+        </button>
+      </div>
+      <p class="p-4 text-center text-sm text-[#d9dee3]" data-lb-caption></p>
+    </div>
+    <template data-lb-items>
+      {
+        items.map((item) => (
+          <div data-caption={`${item.title}, ${item.location}`}>
+            <Img image={item.image} sizes="(min-width: 1100px) 1024px, 100vw" class="rounded-lg" ratio={images[item.image].ratio} />
+          </div>
+        ))
+      }
+    </template>
+  </dialog>
+</div>
+
+<style>
+  .filter-btn {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.125rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--color-line);
+    background: #fff;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    transition: background-color 150ms, color 150ms, border-color 150ms;
+  }
+  .filter-btn:hover {
+    border-color: var(--color-ink);
+  }
+  .filter-btn[aria-pressed='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+  .tile-icon {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.9);
+    color: var(--color-ink);
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity 200ms,
+      transform 200ms var(--ease-out-soft);
+  }
+  .tile:hover .tile-icon,
+  .tile:focus-visible .tile-icon {
+    opacity: 1;
+    transform: none;
+  }
+  .lightbox {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(17 24 31 / 0.96);
+    color: #fff;
+  }
+  .lightbox::backdrop {
+    background: rgb(17 24 31 / 0.6);
+  }
+  .lightbox[open] {
+    animation: lb-in 200ms var(--ease-out-soft);
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+    }
+  }
+  .lb-btn {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+    transition: background-color 150ms;
+  }
+  .lb-btn:hover {
+    background: rgb(255 255 255 / 0.24);
+  }
+  .lb-btn:focus-visible {
+    outline-color: #fff;
+  }
+  .lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  [data-lb-stage] :global(.img-frame) {
+    max-height: calc(100dvh - 10rem);
+    margin-inline: auto;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const tiles = [...root.querySelectorAll<HTMLButtonElement>('[data-open]')];
+    const lis = [...root.querySelectorAll<HTMLLIElement>('li[data-category]')];
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+
+    // Filter
+    const filters = root.querySelector<HTMLElement>('[data-filters]');
+    if (filters) {
+      filters.hidden = false;
+      const btns = [...filters.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+      btns.forEach((btn) =>
+        btn.addEventListener('click', () => {
+          const f = btn.dataset.filter!;
+          btns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+          let shown = 0;
+          lis.forEach((li) => {
+            const show = f === 'all' || li.dataset.category === f;
+            li.hidden = !show;
+            if (show) shown++;
+          });
+          status.textContent = `Showing ${shown} ${shown === 1 ? 'project' : 'projects'}`;
+        }),
+      );
+    }
+
+    // Lightbox (navigates through currently visible items only)
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+    const stage = dialog.querySelector<HTMLElement>('[data-lb-stage]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-lb-caption]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
+    const slides = [...dialog.querySelector<HTMLTemplateElement>('[data-lb-items]')!.content.children] as HTMLElement[];
+    let current = 0;
+    let opener: HTMLElement | null = null;
+    const visible = () => lis.filter((li) => !li.hidden).map((li) => Number(li.dataset.index));
+
+    const show = (index: number) => {
+      current = index;
+      const slide = slides[index].cloneNode(true) as HTMLElement;
+      slide.querySelectorAll('img').forEach((img) => (img.loading = 'eager'));
+      stage.replaceChildren(slide);
+      const list = visible();
+      caption.textContent = slides[index].dataset.caption ?? '';
+      count.textContent = `Photo ${list.indexOf(index) + 1} of ${list.length}`;
+    };
+    const step = (dir: 1 | -1) => {
+      const list = visible();
+      const pos = list.indexOf(current);
+      show(list[(pos + dir + list.length) % list.length]);
+    };
+
+    tiles.forEach((t) =>
+      t.addEventListener('click', () => {
+        opener = t;
+        show(Number(t.dataset.open));
+        dialog.showModal();
+      }),
+    );
+    dialog.querySelector('[data-lb-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lb-prev]')!.addEventListener('click', () => step(-1));
+    dialog.querySelector('[data-lb-next]')!.addEventListener('click', () => step(1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') step(1);
+      if (e.key === 'ArrowLeft') step(-1);
+    });
+    // Click on the dark area (not on the photo or buttons) closes
+    dialog.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target === dialog || target.parentElement === stage.parentElement) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      stage.replaceChildren();
+      opener?.focus();
+    });
+  });
+</script>

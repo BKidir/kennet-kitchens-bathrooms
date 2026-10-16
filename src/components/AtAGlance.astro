@@ -1,0 +1,43 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { BUSINESS, QUOTE_HREF } from '@/config';
+interface Props {
+  price: string;
+  duration: string;
+  includes: string[];
+}
+const { price, duration, includes } = Astro.props;
+---
+
+<div class="rounded-2xl border border-line bg-white p-6 sm:p-8">
+  <h2 class="text-2xl">At a glance</h2>
+  <dl class="mt-5 space-y-4">
+    <div class="relative pl-9">
+      <dt class="text-sm text-ink-muted"><Icon name="pound" size={22} class="absolute top-0.5 left-0 text-teal" />Typical price</dt>
+      <dd class="font-bold">{price}</dd>
+    </div>
+    <div class="relative pl-9">
+      <dt class="text-sm text-ink-muted"><Icon name="calendar" size={22} class="absolute top-0.5 left-0 text-teal" />Typical duration</dt>
+      <dd class="font-bold">{duration}</dd>
+    </div>
+    <div class="relative pl-9">
+      <dt class="text-sm text-ink-muted"><Icon name="shield" size={22} class="absolute top-0.5 left-0 text-teal" />Guarantee</dt>
+      <dd class="font-bold">{BUSINESS.guaranteeYears}-year workmanship guarantee</dd>
+    </div>
+  </dl>
+  <h3 class="mt-6 border-t border-line pt-6 font-sans text-sm font-bold tracking-[0.12em] text-brass-text uppercase">Included</h3>
+  <ul class="mt-3 space-y-2 text-sm text-ink-soft">
+    {
+      includes.map((i) => (
+        <li class="flex gap-2">
+          <Icon name="check" size={18} class="flex-none text-teal" strokeWidth={2.25} />
+          {i}
+        </li>
+      ))
+    }
+  </ul>
+  <div class="mt-6 grid gap-3">
+    <a href={QUOTE_HREF} class="btn btn-primary w-full">Get a free quote</a>
+    <a href={BUSINESS.phone.href} class="btn btn-secondary w-full"><Icon name="phone" size={18} /> {BUSINESS.phone.display}</a>
+  </div>
+</div>

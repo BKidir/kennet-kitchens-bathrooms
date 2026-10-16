@@ -1,0 +1,29 @@
+---
+import Img from '@/components/ui/Img.astro';
+import Icon from '@/components/ui/Icon.astro';
+import type { ImageKey } from '@/data/images';
+interface Props {
+  href: string;
+  title: string;
+  text: string;
+  image?: ImageKey;
+  large?: boolean;
+  headingLevel?: 'h2' | 'h3';
+  delay?: number;
+}
+const { href, title, text, image, large = false, headingLevel = 'h3', delay = 0 } = Astro.props;
+const H = headingLevel;
+---
+
+<article class="card group flex h-full flex-col overflow-hidden" data-reveal style={`--reveal-delay:${delay}ms`}>
+  {image && <Img image={image} class="media-zoom" sizes={large ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'} />}
+  <div class:list={['flex flex-1 flex-col', large ? 'p-6 sm:p-8' : 'p-6']}>
+    <H class:list={[large ? 'text-3xl' : 'text-xl']}>
+      <a href={href} class="stretched no-underline">{title}</a>
+    </H>
+    <p class:list={['mt-3 flex-1 text-ink-soft', !large && 'text-sm']}>{text}</p>
+    <span class="link-arrow mt-4" aria-hidden="true">
+      Find out more <Icon name="arrow" size={18} />
+    </span>
+  </div>
+</article>

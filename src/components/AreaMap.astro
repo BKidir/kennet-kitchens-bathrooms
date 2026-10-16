@@ -1,0 +1,82 @@
+---
+/**
+ * Schematic area map: inline SVG, no map iframe, no third-party request.
+ * Town positions are projected from real coordinates. Each dot links to its area page.
+ */
+import { AREAS, BUSINESS } from '@/config';
+const coords: Record<string, [number, number]> = {
+  Swindon: [51.558, -1.782],
+  'Royal Wootton Bassett': [51.539, -1.905],
+  Wroughton: [51.523, -1.795],
+  Highworth: [51.63, -1.712],
+  Chippenham: [51.458, -2.116],
+  Marlborough: [51.42, -1.729],
+  Cirencester: [51.718, -1.968],
+};
+const px = (lat: number, lng: number) => [Math.round((lng + 2.2) * 700 + 20), Math.round((51.76 - lat) * 1000 + 10)];
+const labelSide: Record<string, 'l' | 'r'> = { Chippenham: 'r', 'Royal Wootton Bassett': 'l', Cirencester: 'r', Highworth: 'r', Marlborough: 'r', Wroughton: 'r', Swindon: 'r' };
+const m4 = [[51.47, -2.2], [51.48, -2.1], [51.52, -1.95], [51.54, -1.85], [51.535, -1.75], [51.53, -1.62]].map(([a, b]) => px(a, b).join(',')).join(' ');
+---
+
+<figure class="relative">
+  <svg viewBox="0 0 440 380" class="h-auto w-full" role="img" aria-labelledby="map-title map-desc">
+    <title id="map-title">Map of the areas Kennet Kitchens &amp; Bathrooms covers</title>
+    <desc id="map-desc">Swindon at the centre, with Royal Wootton Bassett, Wroughton, Highworth, Chippenham, Marlborough and Cirencester around it, all within about 25 miles.</desc>
+    <defs>
+      <radialGradient id="map-glow">
+        <stop offset="0" stop-color="#0f5f5c" stop-opacity="0.16" />
+        <stop offset="1" stop-color="#0f5f5c" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+    {(() => { const [x, y] = px(...coords.Swindon); return <circle cx={x} cy={y} r="190" fill="url(#map-glow)" />; })()}
+    {(() => { const [x, y] = px(...coords.Swindon); return <circle cx={x} cy={y} r="150" fill="none" stroke="#b08d57" stroke-dasharray="3 6" stroke-opacity="0.6" />; })()}
+    <polyline points={m4} fill="none" stroke="#c9c1b4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="395" y="245" font-size="11" font-weight="700" fill="#5c6670" font-family="Manrope, Arial, sans-serif">M4</text>
+    {
+      AREAS.map((a) => {
+        const [x, y] = px(...coords[a.name]);
+        const hub = a.name === 'Swindon';
+        const right = labelSide[a.name] === 'r';
+        return (
+          <a href={`/${a.slug}`} class="map-pin">
+            <circle cx={x} cy={y} r={hub ? 22 : 16} fill="transparent" />
+            <circle cx={x} cy={y} r={hub ? 9 : 6} fill={hub ? '#0f5f5c' : '#fff'} stroke="#0f5f5c" stroke-width="3" />
+            <text
+              x={right ? x + (hub ? 16 : 12) : x - 12}
+              y={y + 4}
+              text-anchor={right ? 'start' : 'end'}
+              font-size={hub ? 15 : 12.5}
+              font-weight={hub ? 800 : 700}
+              fill="#1f2933"
+              font-family="Manrope, Arial, sans-serif"
+            >
+              {a.name}
+            </text>
+          </a>
+        );
+      })
+    }
+  </svg>
+  <figcaption class="mt-2 text-sm text-ink-muted">
+    Based at {BUSINESS.address.street}, {BUSINESS.address.locality}.{' '}
+    <a href={BUSINESS.mapUrl} class="link" rel="noopener">Open in Google Maps</a>
+  </figcaption>
+</figure>
+
+<style>
+  .map-pin text {
+    paint-order: stroke;
+    stroke: #faf8f5;
+    stroke-width: 4px;
+  }
+  .map-pin:hover circle:nth-of-type(2),
+  .map-pin:focus-visible circle:nth-of-type(2) {
+    fill: #b08d57;
+  }
+  .map-pin:focus-visible {
+    outline: none;
+  }
+  .map-pin:focus-visible text {
+    text-decoration: underline;
+  }
+</style>
